@@ -44,7 +44,7 @@ class FieldTileManager {
     fieldMap.forEach((row, yIndex) => {
       let rowTiles = [];
       row.forEach((tileType, xIndex) => {
-        rowTiles.push(new FieldTile(xIndex, yIndex, tileType, tileSize));
+        rowTiles.push(this.#createTile(xIndex, yIndex, tileSize, tileType));
       });
       this.tiles.push(rowTiles);
     });
@@ -57,106 +57,121 @@ class FieldTileManager {
       });
     });
   }
+
+  #createTile(xIndex, yIndex, tileSize, tileType) {
+    switch (tileType) {
+      case 0:
+        return new BlankTile(xIndex, yIndex, tileSize);
+      case 1:
+        return new BlankPlaceableTile(xIndex, yIndex, tileSize);
+      case 2:
+        return new HorizonLineTile(xIndex, yIndex, tileSize);
+      case 3:
+        return new VerticalLineTile(xIndex, yIndex, tileSize);
+      case 4:
+        return new RightBottomCornerTile(xIndex, yIndex, tileSize);
+      case 5:
+        return new BottomLeftCornerTile(xIndex, yIndex, tileSize);
+      case 6:
+        return new RightTopCornerTile(xIndex, yIndex, tileSize);
+      case 7:
+        return new TopLeftCornerTile(xIndex, yIndex, tileSize);
+    }
+  }
 }
 
 class FieldTile {
-  constructor(xIndex, yIndex, tileType, tileSize) {
+  constructor(xIndex, yIndex, tileSize) {
     this.xIndex = xIndex;
     this.yIndex = yIndex;
-    this.tileType = tileType;
     this.tileSize = tileSize;
   }
 
   draw() {
-    switch (this.tileType) {
-      case 0:
-        this.#drawBlank();
-        break;
-      case 1:
-        this.#drawBlankPlaceable();
-        break;
-      case 2:
-        this.#drawHorizonLine();
-        break;
-      case 3:
-        this.#drawVerticalLine();
-        break;
-      case 4:
-        this.#drawRightBottomCorner();
-        break;
-      case 5:
-        this.#drawBottomLeftCorner();
-        break;
-      case 6:
-        this.#drawRightTopCorner();
-        break;
-      case 7:
-        this.#drawTopLeftCorner();
-        break;
-    }
+    // Need to keep the draw method for FieldTile
   }
 
-  #drawBlank() {}
-
-  #drawBlankPlaceable() {}
-
-  #drawHorizonLine() {
-    const centerY = this.#yPos() + this.tileSize / 2;
-    stroke(...ENEMY_LINE_COLOR);
-    line(this.#xPos(), centerY, this.#xPos() + this.tileSize, centerY);
-  }
-
-  #drawVerticalLine() {
-    const centerX = this.#xPos() + this.tileSize / 2;
-    stroke(...ENEMY_LINE_COLOR);
-    line(centerX, this.#yPos(), centerX, this.#yPos() + this.tileSize);
-  }
-
-  #drawRightBottomCorner() {
-    const endX = this.#xPos() + this.tileSize;
-    const endY = this.#yPos() + this.tileSize;
-    const centerX = this.#xPos() + this.tileSize / 2;
-    const centerY = this.#yPos() + this.tileSize / 2;
-    stroke(...ENEMY_LINE_COLOR);
-    line(centerX, centerY, endX, centerY);
-    line(centerX, centerY, centerX, endY);
-  }
-
-  #drawBottomLeftCorner() {
-    const endX = this.#xPos();
-    const endY = this.#yPos() + this.tileSize;
-    const centerX = this.#xPos() + this.tileSize / 2;
-    const centerY = this.#yPos() + this.tileSize / 2;
-    stroke(...ENEMY_LINE_COLOR);
-    line(centerX, centerY, centerX, endY);
-    line(centerX, centerY, endX, centerY);
-  }
-
-  #drawRightTopCorner() {
-    const endX = this.#xPos() + this.tileSize;
-    const endY = this.#yPos();
-    const centerX = this.#xPos() + this.tileSize / 2;
-    const centerY = this.#yPos() + this.tileSize / 2;
-    stroke(...ENEMY_LINE_COLOR);
-    line(centerX, centerY, centerX, endY);
-    line(centerX, centerY, endX, centerY);
-  }
-
-  #drawTopLeftCorner() {
-    const endX = this.#xPos();
-    const endY = this.#yPos();
-    const centerX = this.#xPos() + this.tileSize / 2;
-    const centerY = this.#yPos() + this.tileSize / 2;
-    stroke(...ENEMY_LINE_COLOR);
-    line(centerX, centerY, centerX, endY);
-    line(centerX, centerY, endX, centerY);
-  }
-
-  #xPos() {
+  _xPos() {
     return this.xIndex * this.tileSize;
   }
 
-  #yPos() {
+  _yPos() {
     return this.yIndex * this.tileSize;
+  }
+}
+
+class BlankTile extends FieldTile {
+  draw() {
+    // Implementation for BlankTile
+  }
+}
+
+class BlankPlaceableTile extends FieldTile {
+  draw() {
+    // Implementation for BlankPlaceableTile
+  }
+}
+
+class HorizonLineTile extends FieldTile {
+  draw() {
+    const centerY = this._yPos() + this.tileSize / 2;
+    stroke(...ENEMY_LINE_COLOR);
+    line(this._xPos(), centerY, this._xPos() + this.tileSize, centerY);
+  }
+}
+
+class VerticalLineTile extends FieldTile {
+  draw() {
+    const centerX = this._xPos() + this.tileSize / 2;
+    stroke(...ENEMY_LINE_COLOR);
+    line(centerX, this._yPos(), centerX, this._yPos() + this.tileSize);
+  }
+}
+
+class RightBottomCornerTile extends FieldTile {
+  draw() {
+    const endX = this._xPos() + this.tileSize;
+    const endY = this._yPos() + this.tileSize;
+    const centerX = this._xPos() + this.tileSize / 2;
+    const centerY = this._yPos() + this.tileSize / 2;
+    stroke(...ENEMY_LINE_COLOR);
+    line(centerX, centerY, endX, centerY);
+    line(centerX, centerY, centerX, endY);
+  }
+}
+
+class BottomLeftCornerTile extends FieldTile {
+  draw() {
+    const endX = this._xPos();
+    const endY = this._yPos() + this.tileSize;
+    const centerX = this._xPos() + this.tileSize / 2;
+    const centerY = this._yPos() + this.tileSize / 2;
+    stroke(...ENEMY_LINE_COLOR);
+    line(centerX, centerY, centerX, endY);
+    line(centerX, centerY, endX, centerY);
+  }
+}
+
+class RightTopCornerTile extends FieldTile {
+  draw() {
+    const endX = this._xPos() + this.tileSize;
+    const endY = this._yPos();
+    const centerX = this._xPos() + this.tileSize / 2;
+    const centerY = this._yPos() + this.tileSize / 2;
+    stroke(...ENEMY_LINE_COLOR);
+    line(centerX, centerY, centerX, endY);
+    line(centerX, centerY, endX, centerY);
+  }
+}
+
+class TopLeftCornerTile extends FieldTile {
+  draw() {
+    const endX = this._xPos();
+    const endY = this._yPos();
+    const centerX = this._xPos() + this.tileSize / 2;
+    const centerY = this._yPos() + this.tileSize / 2;
+    stroke(...ENEMY_LINE_COLOR);
+    line(centerX, centerY, centerX, endY);
+    line(centerX, centerY, endX, centerY);
   }
 }
